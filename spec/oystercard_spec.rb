@@ -1,6 +1,8 @@
 require "oystercard"
 
 describe Oystercard do
+  minimum_fare = Oystercard::MINIMUM_FARE
+
   subject(:oystercard) {described_class.new}
 
   it "has a balanace of zero" do
@@ -13,11 +15,26 @@ describe Oystercard do
   end
 
   it 'is initially not in a journey' do
-    expect(oystercard).not_to be_in_journey
+    expect(oystercard.in_journey?).to be false
   end
-  it "can touch in" do
+
+  describe "#touch_in" do
+
+    it "can touch in" do
+      oystercard.top_up(1)
+      expect(oystercard.touch_in).to be true
+    end
+
+    it "raises an error when minimum fare not reached" do
+      expect{ oystercard.touch_in }.to raise_error "insufficent balance"
+    end
+  end
+
+
+  it "can touch out" do
+    oystercard.top_up minimum_fare
     oystercard.touch_in
-    expect(oystercard).to be_in_journey
+    expect(oystercard.touch_out).to be false
   end
 
   it "raises an error if the maximum balance is exceeded" do
