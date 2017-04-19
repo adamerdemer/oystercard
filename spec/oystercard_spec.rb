@@ -5,6 +5,8 @@ describe Oystercard do
 
   subject(:oystercard) {described_class.new}
 
+  let(:station){ double :station}
+
   it "has a balanace of zero" do
     expect(oystercard.balance).to eq(0)
   end
@@ -17,19 +19,26 @@ describe Oystercard do
 
     it "can touch in" do
       oystercard.top_up(1)
-      expect(oystercard.touch_in).to be true
+      expect(oystercard.touch_in(@station)).to be nil
     end
 
     it "raises an error when minimum fare not reached" do
-      expect{ oystercard.touch_in }.to raise_error "insufficent balance"
+      expect{ oystercard.touch_in(@station) }.to raise_error "insufficent balance"
+    end
+
+    it "remembers entry station" do
+      oystercard.top_up minimum_fare
+      oystercard.touch_in(@station)
+      expect(oystercard.entry_station).to eq @station
+
     end
   end
 
   describe "#touch_out" do
     it "can touch out" do
       oystercard.top_up minimum_fare
-      oystercard.touch_in
-      expect(oystercard.touch_out).to be false
+      oystercard.touch_in(@station)
+      expect(oystercard.touch_out).to be nil
     end
 
     it "charges the card on touch_out" do
