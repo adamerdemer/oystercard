@@ -9,11 +9,6 @@ describe Oystercard do
     expect(oystercard.balance).to eq(0)
   end
 
-  it 'decuts an amount from the balance' do
-    oystercard.top_up(20)
-    expect{ oystercard.deduct 3}.to change { subject.balance }.by -3
-  end
-
   it 'is initially not in a journey' do
     expect(oystercard.in_journey?).to be false
   end
@@ -30,11 +25,16 @@ describe Oystercard do
     end
   end
 
+  describe "#touch_out" do
+    it "can touch out" do
+      oystercard.top_up minimum_fare
+      oystercard.touch_in
+      expect(oystercard.touch_out).to be false
+    end
 
-  it "can touch out" do
-    oystercard.top_up minimum_fare
-    oystercard.touch_in
-    expect(oystercard.touch_out).to be false
+    it "charges the card on touch_out" do
+      expect{oystercard.touch_out}.to change{oystercard.balance}.by(-minimum_fare)
+    end
   end
 
   it "raises an error if the maximum balance is exceeded" do
@@ -44,27 +44,9 @@ describe Oystercard do
   end
 
   describe "#top_up" do
-    it { is_expected.to respond_to(:top_up).with(1).argument }
-
     it "can top up the balance" do
-      expect{ oystercard.top_up 1 }.to chan*ge{ oystercard.balance }.by 1
+      expect{ oystercard.top_up 1 }.to change{ oystercard.balance }.by 1
     end
-
   end
-
-  #it { is_expected.to respond_to(:deduct).with(1).argument }
-
-  # it 'decuts an amount from the balance' do
-  #   oystercard.top_up(20)
-  #   expect{ oystercard.deduct 3}.to change { subject.balance }.by -3
-  # end
-  #
-  # it 'is initially not in a journey' do
-  #   expect(oystercard).not_to be_in_journey
-  # end
-
-
-
-
 
 end
