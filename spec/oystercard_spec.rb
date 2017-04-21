@@ -40,6 +40,13 @@ describe Oystercard do
     it "checks that the card has an empty list of journeys by default" do
       expect(oystercard.journeys).to eq []
     end
+
+    it "checks that touching in and out creates one journey" do
+      oystercard.top_up 20
+      oystercard.touch_in("station_1")
+      oystercard.touch_out("station_2")
+      expect(oystercard.journeys).to eq [{"entry_station"=>"station_1", "exit_station"=>"station_2"}]
+    end
   end
 
   describe "#touch_out" do
