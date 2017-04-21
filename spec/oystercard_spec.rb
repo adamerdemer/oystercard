@@ -5,8 +5,7 @@ describe Oystercard do
 
   subject(:oystercard) {described_class.new}
 
-  let(:entry_station){ double :station}
-  let(:exit_station){ double :station}
+  let(:station){ double :station}
 
   it "has a balanace of zero" do
     expect(oystercard.balance).to eq(0)
@@ -18,37 +17,41 @@ describe Oystercard do
 
   describe "#touch_in" do
 
+    it "can touch in" do
+      oystercard.top_up(1)
+      expect(oystercard.touch_in(@station)).to be nil
+    end
+
+
     it "raises an error when minimum fare not reached" do
-      expect{ oystercard.touch_in(entry_station) }.to raise_error "insufficent balance"
+      expect{ oystercard.touch_in(@station) }.to raise_error "insufficent balance"
     end
 
     it "remembers entry station" do
       oystercard.top_up minimum_fare
-      oystercard.touch_in(entry_station)
-      expect(oystercard.entry_station).to eq entry_station
+      oystercard.touch_in(@station)
+      expect(oystercard.entry_station).to eq @station
 
+    end
+  end
+
+  describe "#journeys" do
+
+    it "checks that the card has an empty list of journeys by default" do
+      expect(oystercard.journeys).to eq []
     end
   end
 
   describe "#touch_out" do
     it "can touch out" do
       oystercard.top_up minimum_fare
-      oystercard.touch_in(entry_station)
-      expect(oystercard.touch_out(exit_station)).to be exit_station
+      oystercard.touch_in(@station)
+      expect(oystercard.touch_out(@station)).to be nil
     end
 
     it "charges the card on touch_out" do
-      expect{oystercard.touch_out(exit_station)}.to change{oystercard.balance}.by(-minimum_fare)
+      expect{oystercard.touch_out(@station)}.to change{oystercard.balance}.by(-minimum_fare)
     end
-
-    it "remembers the exit station" do
-      oystercard.top_up(minimum_fare)
-      oystercard.touch_in(entry_station)
-      oystercard.touch_out(exit_station)
-      expect(oystercard.exit_station).to eq exit_station
-    end
-
-
   end
 
   it "raises an error if the maximum balance is exceeded" do

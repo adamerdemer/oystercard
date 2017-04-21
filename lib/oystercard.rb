@@ -3,6 +3,7 @@ class Oystercard
   attr_reader :balance
   attr_reader :entry_station
   attr_reader :exit_station
+  attr_reader :journeys
 
   MAXIMUM_BALANCE = 100
   MINIMUM_FARE = 1
@@ -11,6 +12,7 @@ class Oystercard
     @balance = 0
     @entry_station
     @exit_station
+    @journeys = []
   end
 
   def top_up(amount)
@@ -27,12 +29,18 @@ class Oystercard
   def touch_out(station)
     deduct(MINIMUM_FARE)
     @in_journey = false
-    @entry_station = nil
-    @exit_staion = station
+    # @entry_station = station
+    @exit_station = station
+    journey_hash
+    nil
   end
 
   def in_journey?
     !!entry_station
+  end
+
+  def journey_hash
+    @journeys << {"entry_station" => @entry_station, "exit_station" => @exit_station}
   end
 
   private
@@ -46,4 +54,4 @@ end
 
 # card touches in and out, seperate information stored in
 # instance variables, both go to nil when touch out
-# next step it so store both values in a hash and record it in initialize.
+# next step is to store both values in a hash and record it in initialize.
